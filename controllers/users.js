@@ -1,4 +1,4 @@
-const User = require('../models/users');
+const User = require('../models/user');
 
 const getUsers = (req, res) => {
   User.find({})
@@ -14,8 +14,6 @@ const getUserById = (req, res) => {
 
 const createUser = (req, res) => {
   const { name, about, avatar } = req.body;
-  // eslint-disable-next-line no-console
-  console.log(req.body);
   User.create({ name, about, avatar })
     .then((user) => res.send(user))
     .catch((err) => res.status(500).send({ message: err.message }));
