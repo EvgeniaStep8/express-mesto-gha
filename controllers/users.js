@@ -1,4 +1,4 @@
-import User from '../models/users.js';
+const User = require('../models/users');
 
 const getUsers = (req, res) => {
   User.find({})
@@ -14,10 +14,12 @@ const getUsersById = (req, res) => {
 
 const createUser = (res, req) => {
   const { name, about, avatar } = req.body;
+  // eslint-disable-next-line no-console
+  console.log(name);
 
   User.create({ name, about, avatar })
     .then((user) => res.send({ data: user }))
     .catch((err) => res.status(500).send({ message: err.message }));
 };
 
-export { getUsers, getUsersById, createUser };
+module.exports = { getUsers, getUsersById, createUser };

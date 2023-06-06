@@ -1,6 +1,5 @@
 {
   "name": "express-mesto-gha",
-  "type": "module",
   "version": "1.0.0",
   "description": "Проект Mesto фронтенд + бэкенд",
   "main": "app.js",
