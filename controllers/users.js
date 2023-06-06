@@ -19,4 +19,34 @@ const createUser = (req, res) => {
     .catch((err) => res.status(500).send({ message: err.message }));
 };
 
-module.exports = { getUsers, getUserById, createUser };
+const updateUser = (req, res) => {
+  const { _id } = req.user;
+  const newUser = req.body;
+  User.findByIdAndUpdate(_id, newUser, {
+    new: true,
+    runValidators: false,
+    upsert: false,
+  })
+    .then((user) => res.send(user))
+    .catch((err) => res.status(500).send({ message: err.message }));
+};
+
+const updateAvatar = (req, res) => {
+  const { _id } = req.user;
+  const { avatar } = req.body;
+  User.findByIdAndUpdate(_id, avatar, {
+    new: true,
+    runValidators: false,
+    upsert: false,
+  })
+    .then((user) => res.send(user))
+    .catch((err) => res.status(500).send({ message: err.message }));
+};
+
+module.exports = {
+  getUsers,
+  getUserById,
+  createUser,
+  updateUser,
+  updateAvatar,
+};
