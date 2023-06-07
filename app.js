@@ -1,6 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const router = require('./routes/index');
+const errorHandler = require('./middleware/errorHandler');
 
 const { PORT = 3000 } = process.env;
 const app = express();
@@ -20,6 +21,7 @@ app.use((req, res, next) => {
 });
 
 app.use(router);
+app.use(errorHandler);
 
 // app.use(express.static(path.join(__dirname, 'public')));
 

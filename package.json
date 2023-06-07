@@ -10,7 +10,7 @@
     "dev": "nodemon app.js"
   },
   "keywords": [],
-  "author": "",
+  "author": "Evgenia Stepanova",
   "license": "ISC",
   "devDependencies": {
     "eslint": "^8.41.0",

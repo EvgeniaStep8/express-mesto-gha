@@ -1,4 +1,6 @@
 const User = require('../models/user');
+const BadRequestError = require('../errors/BadRequestError');
+const NotFoundError = require('../errors/NotFoundError');
 
 const getUsers = (req, res) => {
   User.find({})
@@ -6,41 +8,64 @@ const getUsers = (req, res) => {
     .catch((err) => res.status(500).send({ message: err.message }));
 };
 
-const getUserById = (req, res) => {
+const getUserById = (req, res, next) => {
   User.findById(req.params.id)
+    .orFail(() => new NotFoundError('Пользователь с переаднным id не найден'))
     .then((user) => res.send(user))
-    .catch((err) => res.status(500).send({ message: err.message }));
+    .catch((err) => {
+      if (err.message.includes('Cast to ObjectId failed')) {
+        next(new BadRequestError('Передан некорректный id'));
+      } else {
+        next(err);
+      }
+    });
 };
 
-const createUser = (req, res) => {
+const createUser = (req, res, next) => {
   const { name, about, avatar } = req.body;
   User.create({ name, about, avatar })
     .then((user) => res.send(user))
-    .catch((err) => res.status(500).send({ message: err.message }));
+    .catch((err) => {
+      if (err.message.includes('validation failed')) {
+        next(new BadRequestError('Переданы некорректные данные'));
+      } else {
+        next(err);
+      }
+    });
 };
 
-const updateUser = (req, res) => {
+const updateUser = (req, res, next) => {
   const { _id } = req.user;
   const newUser = req.body;
   User.findByIdAndUpdate(_id, newUser, {
     new: true,
-    runValidators: false,
-    upsert: false,
   })
+    .orFail(() => new NotFoundError('Пользователь с переаднным id не найден'))
     .then((user) => res.send(user))
-    .catch((err) => res.status(500).send({ message: err.message }));
+    .catch((err) => {
+      if (err.message.includes('Cast to ObjectId failed')) {
+        next(new BadRequestError('Передан некорректный id'));
+      } else {
+        next(err);
+      }
+    });
 };
 
-const updateAvatar = (req, res) => {
+const updateAvatar = (req, res, next) => {
   const { _id } = req.user;
   const { avatar } = req.body;
   User.findByIdAndUpdate(_id, avatar, {
     new: true,
-    runValidators: false,
-    upsert: false,
   })
+    .orFail(() => new NotFoundError('Пользователь с переаднным id не найден'))
     .then((user) => res.send(user))
-    .catch((err) => res.status(500).send({ message: err.message }));
+    .catch((err) => {
+      if (err.message.includes('Cast to ObjectId failed')) {
+        next(new BadRequestError('Передан некорректный id'));
+      } else {
+        next(err);
+      }
+    });
 };
 
 module.exports = {
