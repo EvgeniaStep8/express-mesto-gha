@@ -5,7 +5,7 @@ const NotFoundError = require('../errors/NotFoundError');
 const getUsers = (req, res, next) => {
   User.find({})
     .then((users) => res.send(users))
-    .catch((err) => next(err));
+    .catch(next);
 };
 
 const getUserById = (req, res, next) => {

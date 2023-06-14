@@ -5,7 +5,7 @@ const NotFoundError = require('../errors/NotFoundError');
 const getCards = (req, res, next) => {
   Card.find({})
     .then((cards) => res.send(cards))
-    .catch((err) => next(err));
+    .catch(next);
 };
 
 const createCard = (req, res, next) => {
