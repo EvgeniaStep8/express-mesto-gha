@@ -1,6 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const router = require('./routes/index');
+const { login } = require('./controllers/users');
 const errorHandler = require('./middleware/errorHandler');
 
 const { PORT = 3000 } = process.env;
@@ -18,6 +19,8 @@ app.use((req, res, next) => {
 
   next();
 });
+
+app.post('/signin', login);
 
 app.use(router);
 app.use(errorHandler);

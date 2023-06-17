@@ -1,3 +1,5 @@
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 const BadRequestError = require('../errors/BadRequestError');
 const NotFoundError = require('../errors/NotFoundError');
@@ -22,16 +24,30 @@ const getUserById = (req, res, next) => {
 };
 
 const createUser = (req, res, next) => {
-  const { name, about, avatar } = req.body;
-  User.create({ name, about, avatar })
+  bcrypt.hash(req.body.password, 16)
+    .then((hash) => User.create({ ...req.body, password: hash }))
     .then((user) => res.send(user))
     .catch((err) => {
       if (err.message.includes('validation failed')) {
         next(new BadRequestError('Переданы некорректные данные'));
-      } else {
-        next(err);
+      } else if (err.message.includes('duplicate key error')) {
+        next(new BadRequestError('Пользователь с переданным email уже существует'));
       }
     });
+};
+
+const login = (req, res, next) => {
+  const { email, password } = req.body;
+  User.findUserByCredentials(email, password)
+    .then((user) => {
+      const token = jwt.sign(
+        { _id: user._id },
+        'some-secret-key',
+        { expiresIn: '7d' },
+      );
+      res.send({ token });
+    })
+    .catch(next);
 };
 
 const updateUser = (req, res, next) => {
@@ -78,6 +94,7 @@ module.exports = {
   getUsers,
   getUserById,
   createUser,
+  login,
   updateUser,
   updateAvatar,
 };
