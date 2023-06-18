@@ -1,6 +1,7 @@
 const Card = require('../models/card');
 const BadRequestError = require('../errors/BadRequestError');
 const NotFoundError = require('../errors/NotFoundError');
+const UnauthorizedError = require('../errors/UnauthorizedError');
 
 const getCards = (req, res, next) => {
   Card.find({})
@@ -23,9 +24,15 @@ const createCard = (req, res, next) => {
 };
 
 const deleteCard = (req, res, next) => {
-  Card.findByIdAndRemove(req.params.id)
+  Card.findById(req.params.id)
     .orFail(() => new NotFoundError('Карточка с переаднным id не найдена'))
-    .then((card) => res.send(card))
+    .then((card) => {
+      if (card.owner.equals(req.user._id)) {
+        card.deleteOne();
+        return res.send(card);
+      }
+      throw new UnauthorizedError('Удалить карточку может только её владелец');
+    })
     .catch((err) => {
       if (err.message.includes('Cast to ObjectId failed')) {
         next(new BadRequestError('Передан некорректный id'));

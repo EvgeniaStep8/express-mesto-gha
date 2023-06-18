@@ -4,6 +4,8 @@ const User = require('../models/user');
 const BadRequestError = require('../errors/BadRequestError');
 const NotFoundError = require('../errors/NotFoundError');
 
+const { NODE_ENV, JWT_SECRET } = process.env;
+
 const getUsers = (req, res, next) => {
   User.find({})
     .then((users) => res.send(users))
@@ -12,6 +14,19 @@ const getUsers = (req, res, next) => {
 
 const getUserById = (req, res, next) => {
   User.findById(req.params.id)
+    .orFail(() => new NotFoundError('Пользователь с переаднным id не найден'))
+    .then((user) => res.send(user))
+    .catch((err) => {
+      if (err.message.includes('Cast to ObjectId failed')) {
+        next(new BadRequestError('Передан некорректный id'));
+      } else {
+        next(err);
+      }
+    });
+};
+
+const getUserMe = (req, res, next) => {
+  User.findById(req.user._id)
     .orFail(() => new NotFoundError('Пользователь с переаднным id не найден'))
     .then((user) => res.send(user))
     .catch((err) => {
@@ -42,9 +57,16 @@ const login = (req, res, next) => {
     .then((user) => {
       const token = jwt.sign(
         { _id: user._id },
-        'some-secret-key',
+        NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret',
         { expiresIn: '7d' },
       );
+      // res
+      //   .cookie('jwt', token, {
+      //     maxAge: 3600000 * 24 * 7,
+      //     httpOnly: true,
+      //     sameSite: true,
+      //   })
+      //   .end();
       res.send({ token });
     })
     .catch(next);
@@ -93,6 +115,7 @@ const updateAvatar = (req, res, next) => {
 module.exports = {
   getUsers,
   getUserById,
+  getUserMe,
   createUser,
   login,
   updateUser,
