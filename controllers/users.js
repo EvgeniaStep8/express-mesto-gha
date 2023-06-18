@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 const BadRequestError = require('../errors/BadRequestError');
 const NotFoundError = require('../errors/NotFoundError');
+const ConflictError = require('../errors/ConflictError');
 
 const { NODE_ENV, JWT_SECRET } = process.env;
 
@@ -46,7 +47,7 @@ const createUser = (req, res, next) => {
       if (err.message.includes('validation failed')) {
         next(new BadRequestError('Переданы некорректные данные'));
       } else if (err.message.includes('duplicate key error')) {
-        next(new BadRequestError('Пользователь с переданным email уже существует'));
+        next(new ConflictError('Пользователь с переданным email уже существует'));
       }
     });
 };
@@ -60,14 +61,13 @@ const login = (req, res, next) => {
         NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret',
         { expiresIn: '7d' },
       );
-      // res
-      //   .cookie('jwt', token, {
-      //     maxAge: 3600000 * 24 * 7,
-      //     httpOnly: true,
-      //     sameSite: true,
-      //   })
-      //   .end();
-      res.send({ token });
+      res
+        .cookie('jwt', token, {
+          maxAge: 3600000 * 24 * 7,
+          httpOnly: true,
+          sameSite: true,
+        })
+        .end();
     })
     .catch(next);
 };
