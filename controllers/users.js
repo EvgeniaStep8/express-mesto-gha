@@ -67,6 +67,7 @@ const login = (req, res, next) => {
           httpOnly: true,
           sameSite: true,
         })
+        .send({ message: 'Авторизация прошла успешно' })
         .end();
     })
     .catch(next);

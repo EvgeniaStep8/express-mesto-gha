@@ -19,12 +19,6 @@ const validateLogin = celebrate({
   }),
 });
 
-const validateAuth = celebrate({
-  headers: Joi.object().keys({
-    authorization: Joi.string().required().min(179).max(179),
-  }).unknown(true),
-});
-
 const validateId = celebrate({
   params: Joi.object().keys({
     id: Joi.required().custom((value, helper) => {
@@ -63,7 +57,6 @@ const validateCreateCard = celebrate({
 module.exports = {
   validateCreateUser,
   validateLogin,
-  validateAuth,
   validateId,
   validateUpdateUser,
   validateUpdateAvatar,
