@@ -42,7 +42,7 @@ const getUserMe = (req, res, next) => {
 const createUser = (req, res, next) => {
   bcrypt.hash(req.body.password, 16)
     .then((hash) => User.create({ ...req.body, password: hash }))
-    .then((user) => res.send(user))
+    .then((user) => res.send(user.toJSON()))
     .catch((err) => {
       if (err.message.includes('validation failed')) {
         next(new BadRequestError('Переданы некорректные данные'));
@@ -67,7 +67,7 @@ const login = (req, res, next) => {
           httpOnly: true,
           sameSite: true,
         })
-        .send({ message: 'Авторизация прошла успешно' })
+        .send(user.toJSON())
         .end();
     })
     .catch(next);
