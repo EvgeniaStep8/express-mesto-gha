@@ -13,6 +13,6 @@ cardRoutes.get('/', auth, getCards);
 cardRoutes.post('/', validateCreateCard, auth, createCard);
 cardRoutes.delete('/:id', validateId, auth, deleteCard);
 cardRoutes.put('/:id/likes', validateId, auth, likeCard);
-cardRoutes.delete('/:id/likes', auth, dislikeCard);
+cardRoutes.delete('/:id/likes', validateId, auth, dislikeCard);
 
 module.exports = cardRoutes;

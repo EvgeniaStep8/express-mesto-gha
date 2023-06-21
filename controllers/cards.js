@@ -1,7 +1,7 @@
 const Card = require('../models/card');
 const BadRequestError = require('../errors/BadRequestError');
 const NotFoundError = require('../errors/NotFoundError');
-const UnauthorizedError = require('../errors/UnauthorizedError');
+const ForbiddenError = require('../errors/ForbiddenError');
 
 const getCards = (req, res, next) => {
   Card.find({})
@@ -31,7 +31,7 @@ const deleteCard = (req, res, next) => {
         card.deleteOne();
         return res.send(card);
       }
-      throw new UnauthorizedError('Удалить карточку может только её владелец');
+      throw new ForbiddenError('Удалить карточку может только её владелец');
     })
     .catch((err) => {
       if (err.message.includes('Cast to ObjectId failed')) {
