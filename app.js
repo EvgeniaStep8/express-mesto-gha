@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const { errors } = require('celebrate');
 const cookieParser = require('cookie-parser');
 const helmet = require('helmet');
-const rateLimit = require('express-rate-limit');
+// const rateLimit = require('express-rate-limit');
 require('dotenv').config();
 const router = require('./routes/index');
 const { createUser, login } = require('./controllers/users');
@@ -11,18 +11,18 @@ const { validateCreateUser, validateLogin } = require('./middleware/validation')
 const errorHandler = require('./middleware/errorHandler');
 
 const { PORT = 3000 } = process.env;
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 100,
-  standardHeaders: true,
-  legacyHeaders: false,
-});
+// const limiter = rateLimit({
+//   windowMs: 15 * 60 * 1000,
+//   max: 100,
+//   standardHeaders: true,
+//   legacyHeaders: false,
+// });
 
 const app = express();
 app.use(express.json());
 app.use(cookieParser());
 app.use(helmet());
-app.use(limiter);
+// app.use(limiter);
 
 mongoose.connect('mongodb://127.0.0.1:27017/mestodb', {
   useNewUrlParser: true,
