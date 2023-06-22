@@ -13,7 +13,7 @@ const errorHandler = require('./middleware/errorHandler');
 const { PORT = 3000 } = process.env;
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  minutesmax: 100,
+  max: 100,
   standardHeaders: true,
   legacyHeaders: false,
 });
