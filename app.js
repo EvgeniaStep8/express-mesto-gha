@@ -10,6 +10,7 @@ const { createUser, login } = require('./controllers/users');
 const { validateCreateUser, validateLogin } = require('./middleware/validation');
 const auth = require('./middleware/auth');
 const errorHandler = require('./middleware/errorHandler');
+const { requestLogger, errorLogger } = require('./middleware/logger');
 
 const { PORT = 3000 } = process.env;
 const limiter = rateLimit({
@@ -29,12 +30,15 @@ mongoose.connect('mongodb://127.0.0.1:27017/mestodb', {
   useNewUrlParser: true,
 });
 
+app.use(requestLogger);
+
 app.post('/signup', validateCreateUser, createUser);
 app.post('/signin', validateLogin, login);
 
 app.use(auth);
 app.use(router);
 
+app.use(errorLogger);
 app.use(errors());
 app.use(errorHandler);
 
